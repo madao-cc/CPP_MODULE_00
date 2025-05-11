@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PhoneBook.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mikelitoris <mikelitoris@student.42.fr>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/10 16:08:54 by mikelitoris       #+#    #+#             */
+/*   Updated: 2025/05/10 16:08:55 by mikelitoris      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "PhoneBook.hpp"
 
 PhoneBook::PhoneBook()
@@ -12,17 +24,29 @@ PhoneBook::~PhoneBook()
 	std::cout << "PhoneBook destroyed" << std::endl;
 }
 
-void	PhoneBook::add_contact(std::string contact_info[5])
+int	PhoneBook::add_contact(std::string contact_info[5])
 {
 	for (int i = 0; i < 5; i++)
 	{
 		if (contact_info[i].empty())
 		{
 			std::cout << RED << "❌ Error: All fields must be filled." << RESET << std::endl;
-			return;
+			return (1);
 		}
 	}
-	
+	if (!has_valid_phone_number(contact_info[3]))
+	{
+		std::cout << RED << "❌ Error: Invalid phone number format." << RESET << std::endl;
+		return (1);
+	}
+	for (int i = 0; i < 5; i++)
+	{
+		if (is_only_whitespace(contact_info[i]))
+		{
+			std::cout << RED << "❌ Error: Fields cannot be just whitespaces." << RESET << std::endl;
+			return (1);
+		}
+	}
 	int index = this->index;
 	this->contacts[index].set_firstname(contact_info[0]);
 	this->contacts[index].set_lastname(contact_info[1]);
@@ -32,6 +56,33 @@ void	PhoneBook::add_contact(std::string contact_info[5])
 	this->index = (index + 1) % 8;
 	if (this->size < 8)
 		this->size++;
+	return (0);
+}
+
+bool	PhoneBook::has_valid_phone_number(const std::string &number)
+{
+	if (number.length() != 9)
+		return false;
+	for(size_t i = 0; i < number.length(); i++)
+	{
+		if (!isdigit(number[i]))
+			return false;
+	}
+	if (number[0] != '9')
+		return false;
+	if (number[1] != '1' && number[1] != '2' && number[1] != '3' && number[1] != '6' && number[1] != '9')
+		return false;
+	return true;
+}
+
+bool	PhoneBook::is_only_whitespace(const std::string &str)
+{
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (!isspace(str[i]))
+			return false;
+	}
+	return true;
 }
 
 void	PhoneBook::display_phonebook()

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mikelitoris <mikelitoris@student.42.fr>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/10 16:08:42 by mikelitoris       #+#    #+#             */
+/*   Updated: 2025/05/10 16:08:43 by mikelitoris      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "PhoneBook.hpp"
 
 int	main(void)
@@ -25,8 +37,8 @@ int	main(void)
 			std::cout << YELLOW << "Enter Phone Number: " << RESET; std::getline(std::cin, contact_info[3]);
 			std::cout << YELLOW << "Enter Darkest Sectret: " << RESET; std::getline(std::cin, contact_info[4]);
 			
-			phonebook.add_contact(contact_info);
-			std::cout << YELLOW << "✅ Contact Added Sucessfully!" << RESET << std::endl;
+			if (phonebook.add_contact(contact_info) == 0)
+				std::cout << YELLOW << "✅ Contact Added Sucessfully!" << RESET << std::endl;
 		}
 		else if (input == "SEARCH")
 		{

@@ -1,8 +1,8 @@
-NAME = phonebook
+NAME = ex02
 
-SRCS = Contact.cpp \
-	PhoneBook.cpp \
-	main.cpp
+SRCS = Account.cpp \
+	tests.cpp \
+
 
 OBJS = $(SRCS:.cpp=.o)
 
