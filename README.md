@@ -8,32 +8,11 @@ This module is your entry point into modern C++ programming. It introduces you t
 - [Exercise 02: The Job Of Your Dreams](#exercise-02-the-job-of-your-dreams)
 - [Conclusion](#conclusion)
 
-*(Reference: en.subject.pdf citeturn0file0)*
-
 ---
 
 ## General Concepts
 
-Before diving into each exercise, it’s important to cover some foundational C++ topics that recur throughout these projects.
-
-### Namespaces
-Namespaces help avoid name collisions by grouping related classes and functions. Instead of using `using namespace std;` (which is discouraged in these exercises), you should call functions using the `std::` prefix.
-
-**Example:**
-```cpp
-#include <iostream>
-
-namespace MyNamespace {
-    void displayMessage() {
-        std::cout << "Hello, Namespaces!" << std::endl;
-    }
-}
-
-int main() {
-    MyNamespace::displayMessage();
-    return 0;
-}
-```
+Before diving into each exercise, it’s important to cover some foundational C++ topics that will recur throughout these projects.
 
 ### Classes and Objects
 Classes are blueprints for objects that combine data (attributes) and behaviors (methods). Encapsulation is key: keep member variables private and provide public methods to interact with them.
@@ -77,7 +56,7 @@ public:
 ```
 
 ### Static Members
-Static members belong to the class as a whole rather than to any one object. They are often used for counters or shared data across instances.
+Static members belong to the class as a whole rather than to any one object. They are often used for counters or shared data across instances. Only one **copy** exists.
 
 **Example:**
 ```cpp
@@ -103,44 +82,24 @@ int main() {
 }
 ```
 
+### ⚠️ Note on `using namespace std;`
+
+The 42 school prevents it's students from using namespaces, and they have a reason for that...
+- **Name collisions**: In C++98, the standard library is big, but as you include more headers, you might run into conflicts if you pull in the entire std namespace. A symbol in another library or your own code might clash with something from std.
+- **Header pollution**: If you put using namespace std; in a header file, everyone including that header now gets the entire std namespace whether they want it or not. It can lead to unexpected conflicts in other people's code.
+- **Readability & clarity**: Being explicit with std:: makes it clear which symbols come from the standard library. It’s a bit more typing, but it makes your code more readable and maintainable.
+
 ---
 
 ## Exercise 00: Megaphone
 
 ### Overview
-The **Megaphone** exercise asks you to create a program that outputs input messages in uppercase. This ensures you are comfortable with handling command line arguments, stream I/O, and basic string manipulation.
+The **Megaphone** exercise asks you to create a program that outputs input messages in uppercase.
 
 ### Concepts Covered
 - **Command Line Arguments:** Using `argc` and `argv` to access parameters passed to the program.
 - **String Manipulation:** Transforming characters to uppercase using `<cctype>`.
 - **Basic I/O:** Using `std::cout` for output.
-
-### Code Example: `megaphone.cpp`
-```cpp
-#include <iostream>
-#include <string>
-#include <cctype>
-
-int main(int argc, char** argv) {
-    // Check if the user provided any arguments.
-    if (argc < 2) {
-        std::cout << "* LOUD AND UNBEARABLE FEEDBACK NOISE *" << std::endl;
-        return 0;
-    }
-
-    // Process each command line argument.
-    for (int i = 1; i < argc; ++i) {
-        std::string word = argv[i];
-        for (char &c : word) {
-            std::cout << static_cast<char>(std::toupper(c));
-        }
-        if (i < argc - 1)
-            std::cout << " ";
-    }
-    std::cout << std::endl;
-    return 0;
-}
-```
 
 #### Detailed Explanation:
 - **Arguments:**  
@@ -166,148 +125,6 @@ For **My Awesome PhoneBook**, you are to design a simple phonebook application t
   Ensure that no field (first name, last name, nickname, phone number, darkest secret) is left empty.
 - **Formatted Output:**  
   Utilize stream manipulators like `std::setw` and `std::right` to maintain column widths and align output.
-
-### Code Example: Contact and PhoneBook Classes
-
-#### Contact.hpp
-```cpp
-#ifndef CONTACT_HPP
-#define CONTACT_HPP
-
-#include <iostream>
-#include <string>
-
-class Contact {
-private:
-    std::string firstName;
-    std::string lastName;
-    std::string nickname;
-    std::string phoneNumber;
-    std::string darkestSecret;
-public:
-    // Setters with room for additional validation if required.
-    void setFirstName(const std::string& str) { firstName = str; }
-    void setLastName(const std::string& str) { lastName = str; }
-    void setNickname(const std::string& str) { nickname = str; }
-    void setPhoneNumber(const std::string& str) { phoneNumber = str; }
-    void setDarkestSecret(const std::string& str) { darkestSecret = str; }
-
-    // Getters to access private data.
-    std::string getFirstName() const { return firstName; }
-    std::string getLastName() const { return lastName; }
-    std::string getNickname() const { return nickname; }
-    std::string getPhoneNumber() const { return phoneNumber; }
-    std::string getDarkestSecret() const { return darkestSecret; }
-};
-
-#endif
-```
-
-#### PhoneBook.hpp
-```cpp
-#ifndef PHONEBOOK_HPP
-#define PHONEBOOK_HPP
-
-#include "Contact.hpp"
-#include <iostream>
-#include <iomanip>
-
-class PhoneBook {
-private:
-    Contact contacts[8];
-    int count;   // Total contacts added so far.
-    int oldest;  // Index pointing to the oldest contact.
-public:
-    PhoneBook() : count(0), oldest(0) {}
-
-    void addContact(const Contact& contact) {
-        contacts[oldest] = contact;
-        oldest = (oldest + 1) % 8;
-        if (count < 8) ++count;
-    }
-
-    void displayContacts() const {
-        std::cout << std::setw(10) << "Index" << "|"
-                  << std::setw(10) << "First Name" << "|"
-                  << std::setw(10) << "Last Name" << "|"
-                  << std::setw(10) << "Nickname" << std::endl;
-        for (int i = 0; i < count; i++) {
-            std::cout << std::setw(10) << i << "|"
-                      << std::setw(10) << (contacts[i].getFirstName().length() > 10 ? 
-                                           contacts[i].getFirstName().substr(0, 9) + "." : contacts[i].getFirstName()) << "|"
-                      << std::setw(10) << (contacts[i].getLastName().length() > 10 ? 
-                                           contacts[i].getLastName().substr(0, 9) + "." : contacts[i].getLastName()) << "|"
-                      << std::setw(10) << (contacts[i].getNickname().length() > 10 ? 
-                                           contacts[i].getNickname().substr(0, 9) + "." : contacts[i].getNickname())
-                      << std::endl;
-        }
-    }
-};
-
-#endif
-```
-
-#### Main.cpp (Program Loop)
-```cpp
-#include "PhoneBook.hpp"
-#include "Contact.hpp"
-#include <iostream>
-#include <string>
-
-int main() {
-    PhoneBook phonebook;
-    std::string command;
-    
-    while (true) {
-        std::cout << "Enter command (ADD, SEARCH, EXIT): ";
-        std::getline(std::cin, command);
-        
-        if (command == "EXIT") {
-            break;
-        } else if (command == "ADD") {
-            Contact newContact;
-            std::string input;
-            
-            std::cout << "Enter first name: ";
-            std::getline(std::cin, input);
-            newContact.setFirstName(input);
-            
-            std::cout << "Enter last name: ";
-            std::getline(std::cin, input);
-            newContact.setLastName(input);
-            
-            std::cout << "Enter nickname: ";
-            std::getline(std::cin, input);
-            newContact.setNickname(input);
-            
-            std::cout << "Enter phone number: ";
-            std::getline(std::cin, input);
-            newContact.setPhoneNumber(input);
-            
-            std::cout << "Enter darkest secret: ";
-            std::getline(std::cin, input);
-            newContact.setDarkestSecret(input);
-            
-            // Validation: Ensure that all fields are provided
-            if (newContact.getFirstName().empty() || newContact.getLastName().empty() || 
-                newContact.getNickname().empty() || newContact.getPhoneNumber().empty() || 
-                newContact.getDarkestSecret().empty()) {
-                std::cout << "Error: All fields are required." << std::endl;
-            } else {
-                phonebook.addContact(newContact);
-                std::cout << "Contact added successfully." << std::endl;
-            }
-        } else if (command == "SEARCH") {
-            phonebook.displayContacts();
-            // Here, you can add additional functionality to view a contact in detail.
-        } else {
-            std::cout << "Invalid command." << std::endl;
-        }
-    }
-    
-    return 0;
-}
-```
 
 #### Detailed Explanation:
 - **Encapsulation:**  
@@ -336,79 +153,6 @@ This exercise simulates the process of recovering a lost source file in a bankin
 - **Test-Driven Development:**  
   Your implementation must pass provided tests by matching specific outputs (except for dynamic elements such as timestamps).
 
-### Code Example: Account.hpp & Account.cpp
-
-#### Account.hpp
-```cpp
-#ifndef ACCOUNT_HPP
-#define ACCOUNT_HPP
-
-#include <iostream>
-#include <string>
-#include <ctime>
-
-class Account {
-private:
-    static int accountCount; // Static member to track total accounts
-    int accountIndex;
-    double balance;
-    // Additional member variables as needed
-
-public:
-    Account(double initial_deposit);
-    ~Account();
-    
-    static void displayAccountsInfos();  // Displays class-wide information
-    void makeDeposit(double deposit);
-    bool makeWithdrawal(double withdrawal);
-    void displayStatus() const;          // Displays the account's current status
-};
-
-#endif
-```
-
-#### Account.cpp
-```cpp
-#include "Account.hpp"
-
-int Account::accountCount = 0;  // Initialize static member
-
-Account::Account(double initial_deposit)
-    : balance(initial_deposit), accountIndex(accountCount) {
-    accountCount++;
-    std::cout << "Account created: " << accountIndex 
-              << ", initial deposit: " << initial_deposit << std::endl;
-}
-
-Account::~Account() {
-    std::cout << "Account closed: " << accountIndex << std::endl;
-}
-
-void Account::makeDeposit(double deposit) {
-    balance += deposit;
-    std::cout << "Deposited " << deposit << " to account " << accountIndex << std::endl;
-}
-
-bool Account::makeWithdrawal(double withdrawal) {
-    if (balance < withdrawal) {
-        std::cout << "Withdrawal refused for account " << accountIndex << std::endl;
-        return false;
-    }
-    balance -= withdrawal;
-    std::cout << "Withdrew " << withdrawal << " from account " << accountIndex << std::endl;
-    return true;
-}
-
-void Account::displayStatus() const {
-    std::cout << "Account " << accountIndex << " balance: " << balance << std::endl;
-}
-
-void Account::displayAccountsInfos() {
-    std::cout << "Total accounts: " << accountCount << std::endl;
-    // Additional aggregate details can be added here.
-}
-```
-
 #### Detailed Explanation:
 - **Static Members:**  
   The static variable `accountCount` demonstrates how data can be shared across all instances of a class. Every time a new account is created, this counter is updated.
@@ -419,14 +163,4 @@ void Account::displayAccountsInfos() {
 
 ---
 
-## Conclusion
-
-CPP_MODULE_00 lays down the essential building blocks of C++ programming. Through these exercises, you learn to:
-- Manipulate command line arguments and transform strings.
-- Design classes with proper encapsulation.
-- Format and present information using i/o stream manipulators.
-- Manage static data and understand object lifecycles with constructors and destructors.
-
-Mastering these topics will not only help you in evaluating your code with peers but also prepare you for the more advanced challenges in subsequent modules. For the complete source code and additional details, please refer to the repository at [CPP_MODULE_00](https://github.com/madao-cc/CPP_MODULE_00).
-
-Happy coding and deep exploration into C++!
+Now all that's left for me to do is to wish you happy coding and a good exploration into C++!
